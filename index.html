@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cute Memo App</title>
+    <!-- Google Fonts: Dongle (Round & Cute) and Nanum Gothic Eco -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=Gowun+Dodum&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --accent-color: #ff758c;
+            --bg-color: #fff5f7;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #4a4a4a;
+            --text-muted: #a0a0a0;
+            --danger-color: #ff6b6b;
+            --success-color: #51cf66;
+            --shadow: 0 8px 24px rgba(255, 117, 140, 0.15);
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+            background: var(--bg-color);
+            background-image:
+                radial-gradient(at 0% 100%, hsla(353, 100%, 95%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(330, 100%, 95%, 1) 0, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 2px solid #fff;
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-family: 'Dongle', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--accent-color);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 20px;
+            border: 2px solid #ffe4e8;
+            outline: none;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            background: #fff8f9;
+        }
+
+        #add-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        #add-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        #memo-list {
+            list-style: none;
+            counter-reset: memo-counter;
+            /* CSS Counter for numbering */
+        }
+
+        li {
+            background: white;
+            padding: 15px 18px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+            animation: slideIn 0.4s ease-out forwards;
+            border: 1px solid #fff0f2;
+            position: relative;
+        }
+
+        li::before {
+            counter-increment: memo-counter;
+            content: counter(memo-counter) ". ";
+            /* Numbering */
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid #ffd1d9;
+            border-radius: 6px;
+            margin-right: 12px;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .memo-text {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            transition: var(--transition);
+            word-break: break-all;
+        }
+
+        input[type="checkbox"]:checked+.memo-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .delete-btn {
+            background: #fff0f0;
+            color: var(--danger-color);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-left: 10px;
+            transition: var(--transition);
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        .delete-btn:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .edit-btn {
+            background: #f0f7ff;
+            color: #4dabf7;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-left: 10px;
+            transition: var(--transition);
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        .edit-btn:hover {
+            background: #4dabf7;
+            color: white;
+        }
+
+        .edit-input {
+            flex: 1;
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 2px solid #4dabf7;
+            outline: none;
+            font-size: 1.1rem;
+            font-family: 'Gowun Dodum', sans-serif;
+            margin-right: 10px;
+            background: #fff;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .removing {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>육달 첫번째 메모장</h1>
+
+        <div class="input-group">
+            <input type="text" id="memo-input" placeholder="무엇을 할까요?" aria-label="Memo content">
+            <button id="add-btn">추가</button>
+        </div>
+
+        <ul id="memo-list">
+            <!-- Memos will appear here -->
+        </ul>
+        <p id="empty-state" class="empty-msg">기록된 메모가 없어요 (´･ω･`)</p>
+    </div>
+
+    <script>
+        const memoInput = document.getElementById('memo-input');
+        const addBtn = document.getElementById('add-btn');
+        const memoList = document.getElementById('memo-list');
+        const emptyState = document.getElementById('empty-state');
+
+        // Load memos on startup
+        window.onload = () => {
+            loadMemos();
+            memoInput.focus();
+        };
+
+        // Save to LocalStorage
+        function saveMemos() {
+            const memos = [];
+            document.querySelectorAll('#memo-list li').forEach(li => {
+                memos.push({
+                    text: li.querySelector('.memo-text').textContent,
+                    completed: li.querySelector('input[type="checkbox"]').checked
+                });
+            });
+            localStorage.setItem('cute-memos', JSON.stringify(memos));
+        }
+
+        // Load from LocalStorage
+        function loadMemos() {
+            const saved = localStorage.getItem('cute-memos');
+            if (saved) {
+                const memos = JSON.parse(saved);
+                if (memos.length > 0) {
+                    emptyState.style.display = 'none';
+                    memos.forEach(memo => renderMemo(memo.text, memo.completed));
+                } else {
+                    emptyState.style.display = 'block';
+                }
+            }
+        }
+
+        function renderMemo(text, completed = false) {
+            const li = document.createElement('li');
+
+            const label = document.createElement('label');
+            label.className = 'checkbox-container';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = completed;
+            checkbox.onchange = saveMemos; // Save state on change
+
+            const span = document.createElement('span');
+            span.className = 'memo-text';
+            span.textContent = text;
+
+            label.appendChild(checkbox);
+            label.appendChild(span);
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-btn';
+            editBtn.textContent = '수정';
+
+            let isEditing = false;
+
+            editBtn.onclick = () => {
+                if (!isEditing) {
+                    // Start editing
+                    isEditing = true;
+                    editBtn.textContent = '저장';
+                    editBtn.style.background = '#ebfbee';
+                    editBtn.style.color = 'var(--success-color)';
+
+                    const currentText = span.textContent;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'edit-input';
+                    input.value = currentText;
+
+                    label.style.display = 'none';
+                    li.insertBefore(input, editBtn);
+                    input.focus();
+
+                    input.onkeypress = (e) => {
+                        if (e.key === 'Enter') editBtn.click();
+                    };
+                } else {
+                    // Save editing
+                    const input = li.querySelector('.edit-input');
+                    const newText = input.value.trim();
+                    if (newText !== '') {
+                        span.textContent = newText;
+                        saveMemos();
+                    }
+
+                    input.remove();
+                    label.style.display = 'flex';
+                    isEditing = false;
+                    editBtn.textContent = '수정';
+                    editBtn.style.background = '';
+                    editBtn.style.color = '';
+                }
+            };
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = '삭제';
+            deleteBtn.onclick = () => {
+                li.classList.add('removing');
+                li.addEventListener('animationend', () => {
+                    li.remove();
+                    saveMemos(); // Save after removal
+                    if (memoList.children.length === 0) {
+                        emptyState.style.display = 'block';
+                    }
+                });
+            };
+
+            li.appendChild(label);
+            li.appendChild(editBtn);
+            li.appendChild(deleteBtn);
+            memoList.appendChild(li);
+        }
+
+        function addMemo() {
+            const text = memoInput.value.trim();
+            if (text === '') return;
+
+            emptyState.style.display = 'none';
+            renderMemo(text);
+            saveMemos(); // Save new memo
+
+            memoInput.value = '';
+            memoInput.focus();
+        }
+
+        addBtn.addEventListener('click', addMemo);
+        memoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addMemo();
+        });
+    </script>
+</body>
+
+</html>
